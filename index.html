@@ -129,10 +129,10 @@
   <div class="card">
     <h2>Accesos Rápidos</h2>
     <div class="links-grid">
-      <a class="link-card" href="../daf-allianz/dashboard.html">
+      <div class="link-card" id="link-daf" style="cursor:pointer" onclick="abrirDAF()">
         <div class="link-title">DAF Allianz</div>
-        <div class="link-sub">Emisión de pólizas</div>
-      </a>
+        <div class="link-sub" id="daf-sub">Emisión de pólizas</div>
+      </div>
       <div class="link-card">
         <div class="link-title">Editor Vertical</div>
         <div class="link-sub">CLAUDE\EDITOR</div>
@@ -165,7 +165,12 @@ const firebaseConfig = {
 };
 // ══════════════════════════════════════════════════════════════════
 
-const FB_READY = firebaseConfig.apiKey !== "PEGA_AQUI";
+const FB_READY  = firebaseConfig.apiKey !== "PEGA_AQUI";
+const IS_HOSTED = window.location.hostname.includes('github.io');
+
+function abrirDAF() {
+  window.open('https://ojoslider-star.github.io/daf-allianz/', '_blank');
+}
 let fbDB = null;
 
 if (FB_READY) {
