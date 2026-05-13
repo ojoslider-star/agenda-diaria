@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -50,6 +51,7 @@
   .tag-gnp       { background: #fee2e2; color: #dc2626; }
   .tag-grab      { background: #fef9c3; color: #92400e; }
   .tag-edit      { background: #eff6ff; color: #1d4ed8; }
+  .tag-yt        { background: #f3e8ff; color: #7e22ce; }
 
   .btn-reset { padding: 5px 12px; border-radius: 6px; border: 1px solid #e4e4e7; background: white; color: #71717a; font-size: 11px; cursor: pointer; font-weight: 500; }
   .btn-reset:hover { background: #f4f4f5; }
@@ -148,6 +150,7 @@
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 
 <script>
@@ -176,9 +179,14 @@ let fbDB = null;
 if (FB_READY) {
   try {
     firebase.initializeApp(firebaseConfig);
-    fbDB = firebase.database();
-    document.getElementById('sync-badge').style.display = 'inline-flex';
-  } catch(e) { console.warn('Firebase init error', e); }
+    firebase.auth().signInAnonymously()
+      .then(() => {
+        fbDB = firebase.database();
+        document.getElementById('sync-badge').style.display = 'inline-flex';
+        init();
+      })
+      .catch(() => init());
+  } catch(e) { console.warn('Firebase init error', e); init(); }
 }
 
 // ── Constantes ────────────────────────────────────────────────────
@@ -194,8 +202,8 @@ const COMUNES = [
 
 const DIA_EXTRA = {
   1: [
-    { id: 'foco-semana', hora: 'Mañana', label: 'Revisar foco de la semana',     hint: 'Pendientes + prioridades lun–jue' },
-    { id: 'ia-youtube',  hora: 'Tarde',  label: 'Trabajo IA / Canal YouTube',    hint: 'Automatización, configuración, contenido' },
+    { id: 'foco-semana', hora: 'Mañana', label: 'Revisar foco de la semana',          hint: 'Pendientes + prioridades lun–jue' },
+    { id: 'ia-youtube',  hora: 'Tarde',  label: 'Ideas y guiones — canales propios',  hint: 'IA sin código + Así comíamos antes', tag: 'yt' },
   ],
   2: [
     { id: 'grab',    hora: '06:00', label: 'Grabación con Octavio — co-work', hint: 'Máx 1 hora', tag: 'grab', antes: true },
@@ -203,14 +211,17 @@ const DIA_EXTRA = {
     { id: 'edicion', hora: 'Tarde', label: 'Edición de video',                hint: 'Editor 2.0 — completo o solo gráficos', tag: 'edit' },
   ],
   3: [
-    { id: 'edicion', hora: 'Mañana', label: 'Edición de video', hint: 'Objetivo: terminar antes de mediodía', tag: 'edit' },
+    { id: 'edicion',      hora: 'Mañana', label: 'Edición de video',              hint: 'Objetivo: terminar antes de mediodía', tag: 'edit' },
+    { id: 'prod-canales', hora: 'Tarde',  label: 'Producción canales propios',     hint: 'Grabar, B-rolls o detallar guiones (después de las 12:00)', tag: 'yt' },
   ],
   4: [
-    { id: 'cierre-semana', hora: 'Tarde', label: 'Cerrar pendientes antes del viernes', hint: '' },
+    { id: 'prod-canales-jue', hora: 'Tarde', label: 'Producción canales propios',     hint: 'Continúa grabación, B-rolls o ajustes finales', tag: 'yt' },
+    { id: 'cierre-semana',    hora: 'Tarde', label: 'Cerrar pendientes antes del viernes', hint: '' },
   ],
   5: [
-    { id: 'guiones',    hora: 'Mañana', label: '2 guiones para videos de la semana', hint: 'WhatsApp Octavio — si no es día hábil, entregar día anterior. De ley.' },
-    { id: 'propuestas', hora: 'Mañana', label: '2 propuestas de video para retiro',  hint: 'WhatsApp Octavio' },
+    { id: 'guiones',        hora: 'Mañana', label: '2 guiones para videos de la semana', hint: 'WhatsApp Octavio — si no es día hábil, entregar día anterior. De ley.' },
+    { id: 'propuestas',     hora: 'Mañana', label: '2 propuestas de video para retiro',  hint: 'WhatsApp Octavio' },
+    { id: 'edicion-canales',hora: 'Tarde',  label: 'Edición canales propios',             hint: 'Meta: publicados antes del domingo', tag: 'yt' },
   ],
 };
 
@@ -225,6 +236,23 @@ const ALERTAS = {
 };
 
 const HORA_CIERRE = { 1: '20:00', 2: '20:00', 3: '20:00', 4: '20:00', 5: '18:00', 6: null, 0: null };
+
+const VACACIONES = [
+  { start: '2026-05-04', end: '2026-05-08', tipo: 'laboral' },  // YouTube sigue
+  { start: '2026-05-27', end: '2026-05-27', tipo: 'laboral' },  // YouTube sigue
+  { start: '2026-06-19', end: '2026-06-26', tipo: 'completa' }, // Todo para
+  { start: '2026-10-19', end: '2026-10-26', tipo: 'laboral' },  // YouTube sigue
+];
+function getVacacionHoy() {
+  const hoy = initDate.toISOString().split('T')[0];
+  return VACACIONES.find(v => hoy >= v.start && hoy <= v.end) || null;
+}
+function getVacacionEn15() {
+  const en15 = new Date(initDate);
+  en15.setDate(en15.getDate() + 15);
+  const en15str = en15.toISOString().split('T')[0];
+  return VACACIONES.find(v => v.start === en15str) || null;
+}
 
 const initDate = new Date();
 const diaNum   = initDate.getDay();
@@ -291,14 +319,20 @@ function setSyncStatus(online) {
 // ── Lógica de tareas ──────────────────────────────────────────────
 function getTareasHoy() {
   const HORA_PUB = { 1: '18:45', 2: '18:45', 3: '18:45', 4: '18:45', 5: '19:00', 6: '18:00', 0: '18:00' };
+  const vac     = getVacacionHoy();
+  if (vac && vac.tipo === 'completa') return [];
   const extras   = DIA_EXTRA[diaNum] || [];
   const esHabil  = diaNum >= 1 && diaNum <= 5;
-  return [
+  let tareas = [
     ...extras.filter(t => t.antes),
     ...(esHabil ? COMUNES : []),
     ...extras.filter(t => !t.antes),
     { id: 'publicar', hora: HORA_PUB[diaNum], label: 'Publicar video del día', hint: 'Lun–Jue 18:45 · Vie 19:00 · Sáb–Dom 18:00' },
   ];
+  if (vac && vac.tipo === 'laboral') {
+    tareas = tareas.filter(t => t.tag === 'yt');
+  }
+  return tareas;
 }
 
 function horaAMin(hora) {
@@ -318,11 +352,22 @@ function esTareaActual(tarea, tareas, idx) {
   return now >= min && now < min + 120;
 }
 
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+}
+
 function renderTareas() {
   const tareas = getTareasHoy();
   const checks = getChecks();
   const container = document.getElementById('task-list');
 
+  const vac = getVacacionHoy();
+  if (vac && vac.tipo === 'completa') {
+    container.innerHTML = '<div class="empty-rest">Vacaciones completas — desconéctate y recarga.</div>';
+    return;
+  }
   if (!tareas.length) {
     container.innerHTML = '<div class="empty-rest">No hay tareas programadas hoy. Descansa.</div>';
     return;
@@ -331,7 +376,7 @@ function renderTareas() {
   container.innerHTML = tareas.map((t, i) => {
     const done    = !!checks[t.id];
     const current = !done && esTareaActual(t, tareas, i);
-    const tagMap  = { gnp: ['tag-gnp','GNP'], grab: ['tag-grab','Grabación'], edit: ['tag-edit','Edición'] };
+    const tagMap  = { gnp: ['tag-gnp','GNP'], grab: ['tag-grab','Grabación'], edit: ['tag-edit','Edición'], yt: ['tag-yt','YouTube'] };
     const tagHtml = t.tag && tagMap[t.tag]
       ? `<span class="tag ${tagMap[t.tag][0]}">${tagMap[t.tag][1]}</span>` : '';
     return `
@@ -396,7 +441,7 @@ function renderExtra() {
       <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleExtra('${t.id}')">
       <div class="task-content">
         <div class="task-hora">Imprevisto</div>
-        <div class="task-label">${t.label}</div>
+        <div class="task-label">${escapeHtml(t.label)}</div>
       </div>
       <button onclick="eliminarExtra('${t.id}')" title="Eliminar"
               style="background:none;border:none;cursor:pointer;color:#d4d4d8;font-size:18px;padding:0 2px;line-height:1;flex-shrink:0"
@@ -405,6 +450,13 @@ function renderExtra() {
 }
 
 function actualizarProgresoCompleto() {
+  const vac = getVacacionHoy();
+  if (vac && vac.tipo === 'completa') {
+    document.getElementById('prog-fill').style.width  = '100%';
+    document.getElementById('prog-label').textContent = 'Vacaciones';
+    document.getElementById('prog-pct').textContent   = '—';
+    return;
+  }
   const tareas = getTareasHoy();
   const checks = getChecks();
   const extra  = getExtra();
@@ -462,10 +514,21 @@ function init() {
   document.getElementById('header-fecha').textContent =
     DIAS[diaNum] + ' ' + initDate.getDate() + ' de ' + MESES[initDate.getMonth()] + ' ' + initDate.getFullYear();
 
-  const cierre = HORA_CIERRE[diaNum];
-  document.getElementById('header-cierre').innerHTML = cierre
-    ? 'cierre <span class="hora-fin">' + cierre + '</span>'
-    : 'día de descanso';
+  const vacHoy  = getVacacionHoy();
+  const cierre  = HORA_CIERRE[diaNum];
+  document.getElementById('header-cierre').innerHTML = vacHoy
+    ? (vacHoy.tipo === 'completa' ? 'vacaciones' : 'vacaciones laborales')
+    : cierre ? 'cierre <span class="hora-fin">' + cierre + '</span>' : 'día de descanso';
+
+  const proxVac = getVacacionEn15();
+  if (proxVac) {
+    const banner = document.createElement('div');
+    banner.className = 'alert alert-yellow';
+    banner.style.margin = '0 0 16px 0';
+    const rango = proxVac.start !== proxVac.end ? proxVac.start + ' – ' + proxVac.end : proxVac.start;
+    banner.textContent = 'Vacaciones en 15 días (' + rango + ')';
+    document.querySelector('.container').prepend(banner);
+  }
 
   const a = ALERTAS[diaNum];
   const alertEl = document.getElementById('alerta-dia');
@@ -484,7 +547,7 @@ function init() {
   });
 }
 
-init();
+if (!FB_READY) init();
 </script>
 </body>
 </html>
