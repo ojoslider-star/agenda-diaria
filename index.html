@@ -256,7 +256,7 @@ function getVacacionEn15() {
 
 const initDate = new Date();
 const diaNum   = initDate.getDay();
-const fechaKey = initDate.toISOString().split('T')[0];
+const fechaKey = [   initDate.getFullYear(),   String(initDate.getMonth() + 1).padStart(2, '0'),   String(initDate.getDate()).padStart(2, '0') ].join('-');
 const storeKey = 'agenda_' + fechaKey;
 const extraKey = 'agenda_extra_' + fechaKey;
 
