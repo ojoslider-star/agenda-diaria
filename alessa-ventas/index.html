@@ -274,7 +274,10 @@
   <div class="card">
     <div class="card-title">
       Ventas de Hoy
-      <button class="btn-sm" onclick="exportarCSV()">Exportar CSV</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn-sm" onclick="recalcularClip()" title="Aplica la tasa Clip actual a todas las ventas con Tarjeta de hoy">Clip: recalcular</button>
+        <button class="btn-sm" onclick="exportarCSV()">Exportar CSV</button>
+      </div>
     </div>
     <div id="venta-list" class="venta-list">
       <div class="empty-state">
@@ -505,6 +508,20 @@ function resetForm() {
   document.getElementById('subtotal-display').textContent = '$0.00';
   document.getElementById('clip-info').classList.remove('visible');
   updateClipDisplay();
+}
+
+function recalcularClip() {
+  const tasa = parseFloat(localStorage.getItem('alessa_clip_tasa') || CLIP_DEFAULT);
+  const arr  = getVentas();
+  const tarjetas = arr.filter(v => v.pago === 'Tarjeta').length;
+  if (!tarjetas) { alert('No hay ventas con Tarjeta hoy.'); return; }
+  if (!confirm(`¿Aplicar ${tasa}% + IVA a ${tarjetas} venta${tarjetas !== 1 ? 's' : ''} con Tarjeta de hoy?`)) return;
+  const updated = arr.map(v => {
+    if (v.pago !== 'Tarjeta') return v;
+    return { ...v, clipTasa: tasa, clipComision: comisionClip(v.subtotal, tasa) };
+  });
+  saveVentas(updated);
+  render();
 }
 
 function registrarGasto() {
