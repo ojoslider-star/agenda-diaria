@@ -4,27 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ventas · Alessa Accesorios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ─────────────────────────────────────────────────────────────────
-     PALETA DE MARCA — ajustar cuando tengamos la identidad real
-  ───────────────────────────────────────────────────────────────── */
+  /* ── Paleta oficial Alessa Accesorios ─────────────────────────── */
   :root {
-    --brand:      #B5546A;   /* rosa principal */
-    --brand-dim:  #F7E8EC;   /* rosa claro */
-    --bg:         #FDF8F3;   /* crema cálido */
+    --brand:      #FF2D78;   /* hot pink principal */
+    --brand-deep: #9C0E40;   /* deep rose */
+    --brand-mid:  #FF8FB8;   /* rosa medio */
+    --brand-dim:  #FFE4EF;   /* blush claro */
+    --bg:         #FFF8FB;   /* fondo blush muy suave */
     --card:       #FFFFFF;
-    --border:     #EDE8E0;
-    --text:       #1C1C1E;
-    --muted:      #6E6E73;
-    --header-bg:  #1C1C1E;
+    --border:     #FADADD;   /* borde rosado suave */
+    --text:       #1A0A10;   /* noir cálido */
+    --muted:      #8C5B6B;   /* muted rose-gray */
+    --header-bg:  #0F0F0F;   /* Noir */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
 
   /* ── Header ── */
   header { background: var(--header-bg); color: white; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-  .brand h1 { font-size: 18px; font-weight: 700; }
+  .brand h1 { font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 600; letter-spacing: 0.02em; background: linear-gradient(90deg, #FFD6E6, #FF8FB8, #FF2D78); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .brand-sub { font-size: 11px; opacity: 0.5; margin-top: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
   .header-right { text-align: right; }
   .hora-display { font-size: 26px; font-weight: 700; }
@@ -38,13 +41,13 @@
 
   /* ── Card ── */
   .card { background: var(--card); border-radius: 10px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); }
-  .card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-family: 'Fredoka', sans-serif; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--brand); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
 
   /* ── Stats ── */
   .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .stat-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
-  .stat-box.accent { background: var(--brand-dim); border-color: var(--brand); }
-  .stat-box.accent .stat-value { color: var(--brand); }
+  .stat-box.accent { background: linear-gradient(135deg, var(--brand-dim), #FFB8D0); border-color: var(--brand-mid); }
+  .stat-box.accent .stat-value { color: var(--brand-deep); }
   .stat-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
   .stat-value { font-size: 22px; font-weight: 700; margin-top: 4px; }
   .stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
@@ -71,10 +74,10 @@
   .form-group select:focus,
   .form-group textarea:focus { outline: none; border-color: var(--brand); }
   .form-group textarea { resize: vertical; min-height: 56px; }
-  .subtotal-display { padding: 8px 10px; border-radius: 6px; background: var(--brand-dim); border: 1px solid var(--brand); font-size: 16px; font-weight: 700; color: var(--brand); }
+  .subtotal-display { padding: 8px 10px; border-radius: 6px; background: var(--brand-dim); border: 1px solid var(--brand-mid); font-size: 16px; font-weight: 700; color: var(--brand-deep); }
 
   /* ── Botones ── */
-  .btn-primary { padding: 10px 20px; border-radius: 6px; border: none; background: var(--brand); color: white; font-size: 13px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 4px; transition: opacity 0.15s; }
+  .btn-primary { padding: 10px 20px; border-radius: 6px; border: none; background: linear-gradient(135deg, var(--brand), var(--brand-deep)); color: white; font-size: 13px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 4px; transition: opacity 0.15s; font-family: 'DM Sans', sans-serif; }
   .btn-primary:hover { opacity: 0.88; }
   .btn-sm { padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border); background: white; color: var(--muted); font-size: 11px; cursor: pointer; font-weight: 500; }
   .btn-sm:hover { background: #f4f4f5; }
@@ -86,7 +89,7 @@
   .venta-item { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; }
   .venta-articulo { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
   .venta-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; align-items: center; }
-  .venta-precio { font-size: 16px; font-weight: 700; color: var(--brand); text-align: right; white-space: nowrap; }
+  .venta-precio { font-size: 16px; font-weight: 700; color: var(--brand-deep); text-align: right; white-space: nowrap; }
   .venta-hora { font-size: 10px; color: var(--muted); text-align: right; margin-top: 4px; }
   .venta-notas { font-size: 12px; color: var(--muted); margin-top: 4px; font-style: italic; }
 
