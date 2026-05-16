@@ -585,6 +585,7 @@ function renderStats() {
 
   const pagoMap = {};
   ventas.forEach(v => { pagoMap[v.pago] = (pagoMap[v.pago] || 0) + v.subtotal; });
+  if (totalGastos > 0) pagoMap['Efectivo'] = (pagoMap['Efectivo'] || 0) - totalGastos;
   document.getElementById('pago-breakdown').innerHTML = Object.entries(pagoMap)
     .map(([p, t]) => `
       <div class="pago-pill">
