@@ -39,13 +39,15 @@
   .card { background: var(--card); border-radius: 10px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); }
   .card-title { font-family: 'Fredoka', sans-serif; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--brand); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
 
-  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stats-grid   { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .stats-grid-2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
   .stat-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
   .stat-box.accent   { background: linear-gradient(135deg, var(--brand-dim), #FFB8D0); border-color: var(--brand-mid); }
   .stat-box.accent .stat-value { color: var(--brand-deep); }
   .stat-box.gasto    { background: #fff5f5; border-color: #fde8e8; }
   .stat-box.gasto .stat-value { color: #dc2626; }
+  .stat-box.clip-box { background: #fefce8; border-color: #fde68a; }
+  .stat-box.clip-box .stat-value { color: #92400e; }
   .stat-box.utilidad { background: #f0fdf4; border-color: #bbf7d0; }
   .stat-box.utilidad .stat-value { color: #15803d; }
   .stat-box.negativa { background: #fff5f5 !important; border-color: #fde8e8 !important; }
@@ -76,6 +78,17 @@
   .form-group textarea { resize: vertical; min-height: 56px; }
   .subtotal-display { padding: 8px 10px; border-radius: 6px; background: var(--brand-dim); border: 1px solid var(--brand-mid); font-size: 16px; font-weight: 700; color: var(--brand-deep); }
 
+  /* Clip commission row */
+  .clip-info { background: #fefce8; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; display: none; flex-direction: column; gap: 6px; }
+  .clip-info.visible { display: flex; }
+  .clip-info-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .clip-info-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #92400e; white-space: nowrap; }
+  .clip-tasa-input { width: 64px; border: 1px solid #fde68a; border-radius: 5px; padding: 4px 8px; font-size: 13px; font-family: inherit; background: white; color: var(--text); text-align: center; }
+  .clip-tasa-input:focus { outline: none; border-color: #d97706; }
+  .clip-iva-note { font-size: 11px; color: #92400e; }
+  .clip-detail { font-size: 12px; color: #78350f; display: flex; gap: 12px; flex-wrap: wrap; }
+  .clip-detail strong { font-weight: 700; }
+
   .btn-primary { padding: 10px 20px; border-radius: 6px; border: none; background: linear-gradient(135deg, var(--brand), var(--brand-deep)); color: white; font-size: 13px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 4px; transition: opacity 0.15s; font-family: 'DM Sans', sans-serif; }
   .btn-primary:hover { opacity: 0.88; }
   .btn-gasto { padding: 10px 20px; border-radius: 6px; border: none; background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; font-size: 13px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 4px; transition: opacity 0.15s; font-family: 'DM Sans', sans-serif; }
@@ -90,6 +103,7 @@
   .venta-articulo { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
   .venta-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; align-items: center; }
   .venta-precio { font-size: 16px; font-weight: 700; color: var(--brand-deep); text-align: right; white-space: nowrap; }
+  .venta-neto { font-size: 11px; color: #92400e; text-align: right; margin-top: 2px; white-space: nowrap; }
   .venta-hora { font-size: 10px; color: var(--muted); text-align: right; margin-top: 4px; }
   .venta-notas { font-size: 12px; color: var(--muted); margin-top: 4px; font-style: italic; }
 
@@ -104,7 +118,7 @@
   .tag-cant { background: #f4f4f5; color: #52525b; }
   .tag-pago { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
   .tag-pago.transferencia { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-  .tag-pago.tarjeta       { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
+  .tag-pago.tarjeta       { background: #fefce8; color: #92400e; border-color: #fde68a; }
 
   .empty-state { text-align: center; padding: 36px; color: var(--muted); }
   .empty-state .icon { font-size: 32px; margin-bottom: 8px; }
@@ -162,15 +176,15 @@
         <div class="stat-value" id="stat-gastos">$0</div>
         <div class="stat-sub" id="stat-gastos-count">0 registros</div>
       </div>
+      <div class="stat-box clip-box">
+        <div class="stat-label">Comisión Clip</div>
+        <div class="stat-value" id="stat-clip">$0</div>
+        <div class="stat-sub" id="stat-clip-count">0 cobros con tarjeta</div>
+      </div>
       <div class="stat-box utilidad" id="stat-utilidad-box">
         <div class="stat-label">Utilidad Neta</div>
         <div class="stat-value" id="stat-utilidad">$0</div>
-        <div class="stat-sub">ventas − gastos</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Utilidad Est. 50%</div>
-        <div class="stat-value" id="stat-margen">$0</div>
-        <div class="stat-sub">margen aprox.</div>
+        <div class="stat-sub">ventas − gastos − clip</div>
       </div>
     </div>
     <div class="pago-breakdown" id="pago-breakdown"></div>
@@ -204,7 +218,7 @@
 
       <div class="form-group">
         <label>Método de Pago</label>
-        <select id="f-pago">
+        <select id="f-pago" onchange="onPagoChange()">
           <option value="Efectivo">Efectivo</option>
           <option value="Transferencia">Transferencia</option>
           <option value="Tarjeta">Tarjeta</option>
@@ -230,6 +244,19 @@
       <div class="form-group">
         <label>Cliente (opcional)</label>
         <input type="text" id="f-cliente" placeholder="Nombre del cliente...">
+      </div>
+
+      <!-- Clip commission — visible solo cuando pago = Tarjeta -->
+      <div class="clip-info form-full" id="clip-info">
+        <div class="clip-info-top">
+          <span class="clip-info-label">Comisión Clip</span>
+          <input class="clip-tasa-input" type="number" id="f-clip-tasa" value="3.6" min="0" step="0.1" oninput="updateClipDisplay()">
+          <span class="clip-iva-note">% + IVA (16%)</span>
+        </div>
+        <div class="clip-detail">
+          <span>Comisión: <strong id="clip-comision-val">$0.00</strong></span>
+          <span>Neto a recibir: <strong id="clip-neto-val">$0.00</strong></span>
+        </div>
       </div>
 
       <div class="form-group form-full">
@@ -308,6 +335,9 @@ const firebaseConfig = {
   appId:             "1:650957334352:web:eb5ee7d4ebf46cf7b62e55"
 };
 
+const CLIP_IVA     = 1.16;
+const CLIP_DEFAULT = 3.6;
+
 const FB_READY = firebaseConfig.apiKey !== "PEGA_AQUI";
 let fbDB = null;
 let lastWriteMs = 0, lastWriteGastosMs = 0;
@@ -325,6 +355,10 @@ const fechaKey = [
 ].join('-');
 const storeKey       = 'alessa_ventas_' + fechaKey;
 const storeKeyGastos = 'alessa_gastos_' + fechaKey;
+
+// Restore last used clip rate
+const savedTasa = localStorage.getItem('alessa_clip_tasa');
+if (savedTasa) document.getElementById('f-clip-tasa').value = savedTasa;
 
 if (FB_READY) {
   try {
@@ -406,10 +440,33 @@ function escapeHtml(s) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
 }
+function comisionClip(subtotal, tasa) {
+  return subtotal * (tasa / 100) * CLIP_IVA;
+}
+
+// ── Clip UI ───────────────────────────────────────────────────────
+function onPagoChange() {
+  const esTarjeta = document.getElementById('f-pago').value === 'Tarjeta';
+  document.getElementById('clip-info').classList.toggle('visible', esTarjeta);
+  updateClipDisplay();
+}
+
+function updateClipDisplay() {
+  const p    = parseFloat(document.getElementById('f-precio').value) || 0;
+  const q    = parseInt(document.getElementById('f-cantidad').value) || 1;
+  const tasa = parseFloat(document.getElementById('f-clip-tasa').value) || CLIP_DEFAULT;
+  const sub  = p * q;
+  const com  = comisionClip(sub, tasa);
+  document.getElementById('clip-comision-val').textContent = formatPeso(com);
+  document.getElementById('clip-neto-val').textContent     = formatPeso(sub - com);
+  localStorage.setItem('alessa_clip_tasa', tasa);
+}
+
 function calcSubtotal() {
   const p = parseFloat(document.getElementById('f-precio').value) || 0;
   const q = parseInt(document.getElementById('f-cantidad').value) || 1;
   document.getElementById('subtotal-display').textContent = formatPeso(p * q);
+  updateClipDisplay();
 }
 
 // ── Registrar venta ───────────────────────────────────────────────
@@ -425,9 +482,20 @@ function registrarVenta() {
   if (!articulo) { alert('Escribe el nombre del artículo.'); document.getElementById('f-articulo').focus(); return; }
   if (!precio || precio <= 0) { alert('Ingresa un precio válido.'); document.getElementById('f-precio').focus(); return; }
 
+  const subtotal = precio * cantidad;
   const now  = new Date();
   const hora = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-  const venta = { id: 'v_' + Date.now(), articulo, categoria, precio, cantidad, subtotal: precio * cantidad, pago, cliente, notas, hora };
+
+  let clipComision = 0, clipTasa = 0;
+  if (pago === 'Tarjeta') {
+    clipTasa     = parseFloat(document.getElementById('f-clip-tasa').value) || CLIP_DEFAULT;
+    clipComision = comisionClip(subtotal, clipTasa);
+  }
+
+  const venta = {
+    id: 'v_' + Date.now(), articulo, categoria, precio, cantidad, subtotal,
+    pago, cliente, notas, hora, clipComision, clipTasa
+  };
 
   const arr = getVentas(); arr.unshift(venta); saveVentas(arr); resetForm(); render();
 }
@@ -444,6 +512,8 @@ function resetForm() {
   document.getElementById('f-cantidad').value  = '1';
   document.getElementById('f-pago').value      = 'Efectivo';
   document.getElementById('subtotal-display').textContent = '$0.00';
+  document.getElementById('clip-info').classList.remove('visible');
+  updateClipDisplay();
 }
 
 // ── Registrar gasto ───────────────────────────────────────────────
@@ -477,8 +547,9 @@ function renderStats() {
 
   const totalVentas  = ventas.reduce((s, v) => s + v.subtotal, 0);
   const totalGastos  = gastos.reduce((s, g) => s + g.monto, 0);
-  const utilidadNeta = totalVentas - totalGastos;
-  const utilidadEst  = totalVentas * 0.5;
+  const totalClip    = ventas.reduce((s, v) => s + (v.clipComision || 0), 0);
+  const tarjetaCount = ventas.filter(v => v.pago === 'Tarjeta').length;
+  const utilidadNeta = totalVentas - totalGastos - totalClip;
   const arts   = ventas.reduce((s, v) => s + v.cantidad, 0);
 
   document.getElementById('stat-total').textContent     = formatPeso(totalVentas);
@@ -488,8 +559,9 @@ function renderStats() {
 
   document.getElementById('stat-gastos').textContent       = formatPeso(totalGastos);
   document.getElementById('stat-gastos-count').textContent = gastos.length + ' registro' + (gastos.length !== 1 ? 's' : '');
+  document.getElementById('stat-clip').textContent         = formatPeso(totalClip);
+  document.getElementById('stat-clip-count').textContent   = tarjetaCount + ' cobro' + (tarjetaCount !== 1 ? 's' : '') + ' con tarjeta';
   document.getElementById('stat-utilidad').textContent     = formatPeso(utilidadNeta);
-  document.getElementById('stat-margen').textContent       = formatPeso(utilidadEst);
 
   const uBox = document.getElementById('stat-utilidad-box');
   uBox.className = 'stat-box utilidad' + (utilidadNeta < 0 ? ' negativa' : '');
@@ -516,7 +588,12 @@ function renderList() {
     list.innerHTML = '<div class="empty-state"><div class="icon">🛍️</div>No hay ventas registradas hoy.</div>';
     return;
   }
-  list.innerHTML = ventas.map(v => `
+  list.innerHTML = ventas.map(v => {
+    const tieneClip = v.pago === 'Tarjeta' && v.clipComision > 0;
+    const netoLine  = tieneClip
+      ? `<div class="venta-neto">Neto: ${formatPeso(v.subtotal - v.clipComision)} (−${formatPeso(v.clipComision)} Clip ${v.clipTasa}%+IVA)</div>`
+      : '';
+    return `
     <div class="venta-item">
       <div>
         <div class="venta-articulo">${escapeHtml(v.articulo)}</div>
@@ -530,12 +607,14 @@ function renderList() {
       </div>
       <div>
         <div class="venta-precio">${formatPeso(v.subtotal)}</div>
+        ${netoLine}
         <div class="venta-hora">${v.hora}</div>
         <div style="margin-top:8px;text-align:right">
           <button class="btn-sm btn-danger" onclick="eliminarVenta('${v.id}')">Eliminar</button>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderGastos() {
@@ -564,11 +643,14 @@ function renderGastos() {
 function exportarCSV() {
   const ventas = getVentas();
   if (!ventas.length) { alert('No hay ventas para exportar.'); return; }
-  const cols = ['Fecha','Hora','Artículo','Categoría','Precio','Cantidad','Subtotal','Pago','Cliente','Notas'];
-  const rows = ventas.map(v => [
-    fechaKey, v.hora, v.articulo, v.categoria, v.precio,
-    v.cantidad, v.subtotal, v.pago, v.cliente, v.notas
-  ].map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(','));
+  const cols = ['Fecha','Hora','Artículo','Categoría','Precio','Cantidad','Subtotal','Pago','Comisión Clip','Neto Recibido','Cliente','Notas'];
+  const rows = ventas.map(v => {
+    const clip = v.clipComision || 0;
+    return [
+      fechaKey, v.hora, v.articulo, v.categoria, v.precio,
+      v.cantidad, v.subtotal, v.pago, clip.toFixed(2), (v.subtotal - clip).toFixed(2), v.cliente, v.notas
+    ].map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(',');
+  });
   const blob = new Blob(['﻿' + [cols.join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
