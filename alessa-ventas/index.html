@@ -184,7 +184,7 @@
       <div class="stat-box utilidad" id="stat-utilidad-box">
         <div class="stat-label">Utilidad Neta</div>
         <div class="stat-value" id="stat-utilidad">$0</div>
-        <div class="stat-sub">ventas − gastos − clip</div>
+        <div class="stat-sub">50% ventas − gastos − clip</div>
       </div>
     </div>
     <div class="pago-breakdown" id="pago-breakdown"></div>
@@ -566,7 +566,7 @@ function renderStats() {
   const totalGastos  = gastos.reduce((s, g) => s + g.monto, 0);
   const totalClip    = ventas.reduce((s, v) => s + (v.clipComision || 0), 0);
   const tarjetaCount = ventas.filter(v => v.pago === 'Tarjeta').length;
-  const utilidadNeta = totalVentas - totalGastos - totalClip;
+  const utilidadNeta = (totalVentas * 0.5) - totalGastos - totalClip;
   const arts   = ventas.reduce((s, v) => s + v.cantidad, 0);
 
   document.getElementById('stat-total').textContent     = formatPeso(totalVentas);
